@@ -1,0 +1,326 @@
+
+<!-- Created in Spring 2015 -->
+
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta charset="utf-8"></meta>
+        <title>The Quidditch Game - Individual Mode - Rookie</title>
+        <style>
+        @charset "utf-8";
+/* CSS Document */
+html,body { margin:0; padding:0;}
+#canvas {
+    background-image:url(https://s22.postimg.org/ku19lyh0x/quidditch3.png);
+    height:600px;
+    width:600px;
+}
+
+</style>
+    </head>
+    <body>
+<canvas id="canvas"></canvas>
+       <script>
+  // JavaScript Document
+window.onload = function() {
+    // start the JS functions
+    console.log("begin animation");
+    
+    /*window.cancelRequestAnimFrame = ( function() {
+	return window.cancelAnimationFrame          ||
+		window.webkitCancelRequestAnimationFrame    ||
+		window.mozCancelRequestAnimationFrame       ||
+		window.oCancelRequestAnimationFrame     ||
+		window.msCancelRequestAnimationFrame        ||
+		clearTimeout
+} )();*/
+    
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    var width = canvas.width = 600;
+    var height = canvas.height = 600;
+    
+    // Hero image
+    var heroReady = false, touchFlag=false;
+    var heroImage = new Image();
+    
+	heroImage.onload = function () {  heroReady = true;  };
+	
+    heroImage.src = "https://s22.postimg.org/qnu2jjfv5/hp_Hero3.png";
+    
+    // Game objects
+    var hero = { speed: 500 };// movement in pixels per second
+    var griffondor = 0;
+    var objects  = new Array();
+    var enemies = new Array ();
+
+    /*var numObjects = 11;
+    
+    for (var i = 0; i < numObjects; i++){*/
+	var snitch = new Object();
+	snitch.size = 16;
+	snitch.cx = canvas.width/2;
+	snitch.cy = canvas.height/2;
+	snitch.xr = width * .5 -snitch.size; // x radius for elliptical path
+	snitch.yr = height * .5 -snitch.size; // x radius for elliptical path
+	snitch.angleX = Math.floor(Math.random() * 360);
+	snitch.angleY = Math.floor(Math.random() * 360);
+	snitch.x = snitch.cx;
+	snitch.y = snitch.cy;
+	snitch.speedX = 0.09;
+	snitch.speedY = 0.05;
+	snitch.color = "orange";
+	objects.push(snitch);
+    /*}*/
+
+/*var numEnemies = 2;
+    
+    for (var i = 0; i < numEnemies; i++){*/
+	var badsnitch = new Object();
+	badsnitch.size = 16;
+	badsnitch.cx = canvas.width/2;
+	badsnitch.cy = canvas.height/2;
+	badsnitch.xr = width * .5 -badsnitch.size; // x radius for elliptical path
+	badsnitch.yr = height * .5 -badsnitch.size; // x radius for elliptical path
+	badsnitch.angleX = Math.floor(Math.random() * 360);
+	badsnitch.angleY = Math.floor(Math.random() * 360);
+	badsnitch.x = badsnitch.cx;
+	badsnitch.y = badsnitch.cy;
+	badsnitch.speedX = 0.01;
+	badsnitch.speedY = 0.02;
+	badsnitch.color = "black";
+	enemies.push(badsnitch);
+    /*}*/
+    
+    var badsnitchtwo = new Object();
+	badsnitchtwo.size = 16;
+	badsnitchtwo.cx = canvas.width/2;
+	badsnitchtwo.cy = canvas.height/2;
+	badsnitchtwo.xr = width * .5 -badsnitchtwo.size; // x radius for elliptical path
+	badsnitchtwo.yr = height * .5 -badsnitchtwo.size; // x radius for elliptical path
+	badsnitchtwo.angleX = Math.floor(Math.random() * 360);
+	badsnitchtwo.angleY = Math.floor(Math.random() * 360);
+	badsnitchtwo.x = badsnitchtwo.cx;
+	badsnitchtwo.y = badsnitchtwo.cy;
+	badsnitchtwo.speedX = 0.03;
+	badsnitchtwo.speedY = 0.02;
+	badsnitchtwo.color = "black";
+	enemies.push(badsnitchtwo);
+
+
+    var reset = function () {
+		hero.x = canvas.width/2;
+		hero.y = 140;
+		// Throw the snitch somewhere on the screen randomly
+		snitch.x = (canvas.width-32)/2;
+		snitch.y = (canvas.height-32)/2;
+	};
+    
+    function gameOver() {
+    
+    var r = confirm("GAME OVER. You won " + griffondor + " point(s). Restart?");
+if (r == true) {window.location.reload();
+  
+} else {
+	window.open("http://aftertheashesworks.wixsite.com/ataworkshop/harry-potter-js");
+   }
+    
+    /*context.fillStyle = "white";
+	context.font = "20px Arial, sans-serif";
+	context.textAlign = "center";
+	context.textBaseline = "middle";
+	context.fillText("GAME OVER - You won" + griffondor + "point(s)." );
+    
+   cancelRequestAnimFrame(main);
+   cancelRequestAnimFrame(render);*/
+}
+    
+    
+    // move many objects
+    
+    render();
+    
+    function render() {
+        
+        context.clearRect(0,0,canvas.width, canvas.height);
+        
+             enemies.forEach(function(badsnitch){
+			
+			var x = badsnitch.xr * Math.cos(badsnitch.angleX);
+			var y = badsnitch.yr * Math.sin(badsnitch.angleY);
+			
+			context.fillStyle = badsnitch.color;
+			context.beginPath();
+			
+			badsnitch.x=badsnitch.cx + x;
+			badsnitch.y=badsnitch.cy + y;			
+			
+			context.arc(badsnitch.x, badsnitch.y, badsnitch.size, Math.PI * 0 , Math.PI * 2, false);
+			context.fill();
+		
+			badsnitch.angleX+=badsnitch.speedX;
+			badsnitch.angleY+=badsnitch.speedY;
+			
+			
+		});
+        
+        enemies.forEach(function(badsnitchtwo){
+			
+			var x = badsnitchtwo.xr * Math.cos(badsnitchtwo.angleX);
+			var y = badsnitchtwo.yr * Math.sin(badsnitchtwo.angleY);
+			
+			context.fillStyle = badsnitchtwo.color;
+			context.beginPath();
+			
+			badsnitchtwo.x=badsnitchtwo.cx + x;
+			badsnitchtwo.y=badsnitchtwo.cy + y;			
+			
+			context.arc(badsnitchtwo.x, badsnitchtwo.y, badsnitchtwo.size, Math.PI * 0 , Math.PI * 2, false);
+			context.fill();
+		
+			badsnitchtwo.angleX+=badsnitchtwo.speedX;
+			badsnitchtwo.angleY+=badsnitchtwo.speedY;
+			
+			
+		});
+        
+        objects.forEach(function(snitch){
+			
+			var x = snitch.xr * Math.cos(snitch.angleX);
+			var y = snitch.yr * Math.sin(snitch.angleY);
+		
+			/*if(touchFlag){
+				snitch.color = "red";
+			}
+			else{
+				snitch.color = "orange";
+			}*/
+			
+			context.fillStyle = snitch.color;
+			context.beginPath();
+			
+			snitch.x=snitch.cx + x;
+			snitch.y=snitch.cy + y;			
+			
+			context.arc(snitch.x, snitch.y, snitch.size, Math.PI * 0 , Math.PI * 2, false);
+			context.fill();
+		
+			snitch.angleX+=snitch.speedX;
+			snitch.angleY+=snitch.speedY;
+			
+			
+		}
+        
+            );
+        
+        
+		
+		requestAnimationFrame(render);    
+    }
+        
+
+
+// Handle keyboard controls
+var keysDown = {};
+
+addEventListener("keydown", function (e) {keysDown[e.keyCode] = true;}, false);
+
+addEventListener("keyup", function (e) { delete keysDown[e.keyCode];}, false);
+
+
+	var update = function (modifier) {
+    
+        if (38 in keysDown && hero.y>0) { // Player holding up
+        hero.y -= hero.speed * modifier;
+        }
+        if (40 in keysDown && hero.y<canvas.height-32) { // Player holding down
+        hero.y += hero.speed * modifier;
+        }
+        if (37 in keysDown && hero.x>0) { // Player holding left
+        hero.x -= hero.speed * modifier;
+        }
+        if (39 in keysDown && hero.x<canvas.width-32) { // Player holding right
+        hero.x += hero.speed * modifier;
+        }
+	}
+    
+    // Draw everything
+    var renderGame = function () {
+
+		if (heroReady) {
+			context.drawImage(heroImage, hero.x, hero.y);
+		}
+		
+		// Score
+		context.fillStyle = "lgb(250, 250, 250)";
+		context.font = "24px Algerian";
+		context.textAlign = "right";
+		context.textBaseline = "top";
+		context.fillText("Gryffindor: " + griffondor, canvas.width-32, 32);
+    
+	};
+
+// The main game loop
+var main = function () {
+    var now = Date.now();
+    var delta = now - then;
+
+    update(delta / 1000);
+
+	// Are they touching 
+	if((Math.abs(snitch.x -hero.x)<=32)&&(Math.abs(snitch.y-hero.y)<=32)){
+
+			if(!touchFlag){
+			++griffondor;
+		}
+		touchFlag=true;
+		reset();
+	}
+	
+    else{
+		touchFlag=false;	
+	}
+    
+    //Badsnitch touching?
+	if((Math.abs(badsnitch.x -hero.x)<=32)&&(Math.abs(badsnitch.y-hero.y)<=32)){
+
+		gameOver();
+	}
+
+    
+    //Badsnitch Two touching?
+	if((Math.abs(badsnitchtwo.x -hero.x)<=32)&&(Math.abs(badsnitchtwo.y-hero.y)<=32)){
+
+			
+		gameOver();
+}
+	
+    renderGame();
+	
+	
+
+    then = now;
+
+    // Request to do this again ASAP
+    requestAnimationFrame(main);
+};
+
+
+	
+
+
+// Cross-browser support for requestAnimationFrame
+var w = window;
+//requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+// Let's play this game!
+var then = Date.now();
+reset();
+main(); 
+
+};</script>
+    </body>
+
+</html>
